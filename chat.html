@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Room</title>
+</head>
+<body>
+<div id="chat-box">
+    <div id="messages"></div>
+    <input type="text" id="message" placeholder="Digite sua mensagem">
+    <button onclick="sendMessage()">Enviar</button>
+</div>
+
+<script>
+    const roomName = "sala1"; // Nome da sala
+
+    function appendMessage(message) {
+        const messages = document.getElementById("messages");
+        const p = document.createElement("p");
+        p.innerText = message;
+        messages.appendChild(p);
+    }
+
+    function sendMessage() {
+        const messageInput = document.getElementById("message");
+        const message = messageInput.value;
+        messageInput.value = "";
+        fetch(`/send?room=${roomName}&message=${message}`)
+            .catch(error => console.error("Erro ao enviar mensagem:", error));
+    }
+
+    const socket = new WebSocket(`ws://localhost:8080/chat?room=${roomName}`);
+
+    socket.onmessage = event => {
+        appendMessage(event.data);
+    };
+</script>
+</body>
+</html>
